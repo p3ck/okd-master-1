@@ -1,0 +1,54 @@
+[all:vars]
+prov_nic=eth0
+pub_nic=eth1
+domain=metalkube.org
+cluster=dciokd
+dnsvip=192.168.123.6
+masters_prov_nic=ens3
+prov_ip=172.22.0.3
+dir="{{ ansible_user_dir }}/clusterconfigs"
+#local_registry_host=okd-master-1.home.pecknet.com
+#local_registry_port=4443
+#provision_cache_store="/opt/cache"
+
+#webserver_url="http://okd-master-1.home.pecknet.com:8080"
+
+
+# Master nodes
+[masters]
+dciokd-master-0  name=dciokd-master-0 role=master ipmi_user=root ipmi_password=password ipmi_address=192.168.1.61 ipmi_port=6231 provision_mac=52:54:00:a3:e7:dd hardware_profile=default socket_console=True
+dciokd-master-1  name=dciokd-master-1 role=master ipmi_user=root ipmi_password=password ipmi_address=192.168.1.61 ipmi_port=6232 provision_mac=52:54:00:b8:28:f7 hardware_profile=default socket_console=True
+dciokd-master-2  name=dciokd-master-2 role=master ipmi_user=root ipmi_password=password ipmi_address=192.168.1.61 ipmi_port=6233 provision_mac=52:54:00:46:13:79 hardware_profile=default socket_console=True
+
+[masters:vars]
+ansible_user=core
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/dciokd-provisioner_rsa'
+
+# Worker nodes
+[workers]
+
+[workers:vars]
+ansible_user=core
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/dciokd-provisioner_rsa'
+
+# Provision Host
+[provisioner]
+provisionhost  name=provisionhost ansible_user=dci prov_nic=eth0 pub_nic=eth1 ansible_ssh_common_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+# Registry Host
+#   Define a host here to create or use a local copy of the installation registry
+#   Used for disconnected installation
+[registry_host]
+#okd-master-1.home.pecknet.com ansible_user=dci-openshift-agent
+
+[registry_host:vars]
+# The following cert_* variables are needed to create the certificates
+#   when creating a disconnected registry. They are not needed to use
+#   an existing disconnected registry.
+#disconnected_registry_auths_file=/opt/cache/okd-master-1.home.pecknet.com-auths.json
+#disconnected_registry_mirrors_file=/opt/cache/okd-master-1.home.pecknet.com-trust-bundle.yml
+#registry_dir="/opt/registry"
+#local_repo=ocp4/openshift4
+# The following mirror entries are the default ones. If you want to add more mirror
+#   you can uncomment this parameter and add it here.
+#registry_source_mirrors=["quay.io/openshift-release-dev/ocp-v4.0-art-dev", "registry.svc.ci.openshift.org/ocp/release", "quay.io/openshift-release-dev/ocp-release"]
